@@ -1,0 +1,10 @@
+.right {
+	text-align: right;
+}
+
+table {
+	display: flex;
+	align-items: center;
+	max-width: 50%;
+	border-spacing: 10px;
+}
