@@ -1,0 +1,2 @@
+echo Start the react app
+REACT_APP_API='http://localhost:8000' npm start

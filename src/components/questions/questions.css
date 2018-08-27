@@ -1,3 +1,5 @@
+
+
 .right {
 	text-align: right;
 }
@@ -5,6 +7,16 @@
 table {
 	display: flex;
 	align-items: center;
-	max-width: 50%;
+	max-width: 90%;
 	border-spacing: 10px;
+}
+
+.questions {
+	/*outline-style: solid;*/
+	max-width:90%;
+	margin: auto;
+}
+
+.lfslfs {
+	outline-style: solid;
 }

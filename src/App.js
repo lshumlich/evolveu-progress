@@ -1,27 +1,41 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
+import evolveu from './EvolveU.jpeg';
 import Questions from './components/questions/questions';
 import './App.css';
-const questions = [
-  'q1',
-  'q2 asdf asdf asdf sdaf sdaf ',
-  'q3',
-  'q4',
-  'q5'
-];
 
 class App extends Component {
+
+  constructor() {
+    super();
+    this.state = {
+      questions: []
+    }
+  }
+
+
+  componentDidMount = () => {
+    // fetch('http://localhost:5000/questions')
+    fetch(process.env.REACT_APP_API + '/questions')
+      .then(response => response.json())
+      .then(data=> {
+        console.log(data)
+        this.setState({questions: data})
+      })
+  }
+
   render() {
     return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+          <img src={evolveu} style={{height: "40px"}} className="App-logo-evolveu" alt="logo" />
+          <h1 className="App-title">Welcome to EvolveuU Evaluation Criteria.</h1>
         </header>
           <p className="App-intro">
-            To get started, edit <code>src/App.js</code> and save to reload.
+            Each week, fill out the evaluation criteria.
           </p>
-          <Questions questions={questions}/>
+          <Questions questions={this.state.questions}/>
       </div>
     );
   }
