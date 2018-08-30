@@ -1,7 +1,17 @@
+/*
+
+EvolveU: Colors
+
+blue #42a0bc / rgb(66, 160, 188)
+green #97c444 / rgb(151, 196, 68)
+
+
+*/
+
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import evolveu from './EvolveU.jpeg';
 import Questions from './components/questions/questions';
+import Register from './components/register';
 import './App.css';
 
 class App extends Component {
@@ -9,7 +19,11 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      questions: []
+      questions: [],
+      results: [],
+      uuid: '',
+      name: '',
+      id: '',
     }
   }
 
@@ -19,23 +33,47 @@ class App extends Component {
     fetch(process.env.REACT_APP_API + '/questions')
       .then(response => response.json())
       .then(data=> {
-        console.log(data)
         this.setState({questions: data})
       })
+      .catch(err => console.log(err));
   }
 
+  onRegister = (event) => {
+    const uuid = event.target.value;
+    // console.log('We have a register...', event)
+    fetch(process.env.REACT_APP_API + '/register/' + uuid)
+      .then(response => response.json())
+      .then(data=> {
+        console.log(data);
+        if ('id' in data) {
+          this.setState({
+            uuid: uuid,
+            id: data.id,
+            name: data.name,
+          })
+      }
+      })
+      .catch(err => console.log(err));
+    // this.setState({input: event.target.value});
+  }
+
+
   render() {
+
+    let body;
+    if (this.state.uuid === '') {
+      body = <Register onRegister={this.onRegister}/>;
+    } else {
+      body = <Questions uuid={this.state.uuid}/>;
+    }
+
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <img src={evolveu} style={{height: "40px"}} className="App-logo-evolveu" alt="logo" />
-          <h1 className="App-title">Welcome to EvolveuU Evaluation Criteria.</h1>
+          <h1 className="App-title">Welcome {this.state.name} to EvolveU Evaluation Criteria</h1>
         </header>
-          <p className="App-intro">
-            Each week, fill out the evaluation criteria.
-          </p>
-          <Questions questions={this.state.questions}/>
+        {body}
       </div>
     );
   }
