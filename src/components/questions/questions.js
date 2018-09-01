@@ -14,16 +14,25 @@ class Questions extends Component {
 	 	// const isValid = props.questions.map((q,i) =>
 	 	// 	true
 	 	// )
+	 	const allow_input = false
 	 	this.state = {
 	 		isValid: [],
 	 		total: 0,
 	 		results: [],
 	 		questions: [],
-	 		last_monday: 'Start State',
-	 		this_monday: 'Start State',
-	 		next_monday: 'Start State',
+	 		last_monday: '',
+	 		this_monday: '',
+	 		next_monday: '',
+	 		going_well: '',
+	 		issues: '',
+	 		what_to_try: '',
 	 		isOpen: false,
+	 		disable: allow_input ? '' : 'disabled',
 	 	}
+
+	this.onQchange = this.onQchange.bind(this);
+  	this.onQBlur = this.onQblur.bind(this);
+
 	}
 
 	componentDidMount = () => {
@@ -54,23 +63,45 @@ class Questions extends Component {
 		  .then(response => response.json())
 		  .then(data => {
 		  	// console.log(data);
-		  	const results = this.state.results;
-		  	const isValid = this.state.isValid;
+		  	// const results = this.state.results;
+		  	// const isValid = this.state.isValid;
+		  	const results = {};
+		  	const isValid = {};
+ 
+		  	this.state.questions.forEach((value) => {
+		  		results[value.code] = 0;
+		  		isValid[value.code] = true;
+		  	})
+
 		  	if (data.results) {
 				Object.keys(data.results).forEach((value) => {  		
 			  		// console.log('--- adding a result', value, data.results[value])
 			  		results[value] = data.results[value];
 			  	})
 		  	}
+		  	// console.log(data);
+		  	// console.log(results);
+		  	// console.log(isValid);
+		  	console.log(data.allow_input);
 		    this.setState({
-		    	// results,
+		    	results,
+		    	isValid,
 		    	last_monday: data.last_monday,
 		    	this_monday: data.this_monday,
 		    	next_monday: data.next_monday,
+		    	going_well: data.going_well,
+		    	issues: data.issues,
+		    	what_to_try: data.what_to_try,
 		    	total: this.totalValues(results, isValid),
+		    	disable: data.allow_input ? '' : 'disabled',
 		    })
 		  })
 		  .catch(err => console.log(err));
+	}
+
+	changeMonday = (monday) => {
+		console.log('changeMonday', monday);
+		this.getResults(monday);
 	}
 
 	toggleModal = () => {
@@ -148,22 +179,27 @@ class Questions extends Component {
 	}
 
 	onTextChange = (event, code) => {
-		console.log('onTextChange', code, event.target.value);
+		// console.log('onTextChange', code, event.target.value);
 		this.updateServer('text', code, event.target.value);
 	}
 
+	onGoingWell = (event) => {
+		this.setState({going_well: event.target.value});
+	}
+
+	onIssues = (event) => {
+		this.setState({issues: event.target.value});
+	}
+
+	onWhatToTry = (event) => {
+		this.setState({what_to_try: event.target.value});
+	}
 
 	onClick = (e) => {
 
 		console.log('Just a click');
-		const map = this.state.results;
-		console.log(map);
-		Object.keys(map).forEach((a) => console.log(a, map[a]))
 	}
-
-	changeMonday = (monday) => {
-		console.log('changeMonday', monday);
-	}
+  					// value={this.state.results[q.code]} 
 
   render() {
   	// console.log('render results', this);
@@ -175,7 +211,7 @@ class Questions extends Component {
   			<td className='right' >
   				{q.question} :</td>
   			<td> 
-  				<input 
+  				<input disabled={this.state.disable}
   					style={{width:"30px"}}
   					onChange={(e) => this.onQchange(e,q.code)} 
   					onBlur={(e) => this.onQblur(e,q.code)} 
@@ -205,19 +241,19 @@ class Questions extends Component {
       	<div style={{width:"100%"}}>
      		{ this.state.last_monday !== '' &&
 	      		<div style={{float:"left"}}>
-	      			<button class="button" onClick={() => this.changeMonday(this.state.last_monday)}> Prev </button>
+	      			<button className="button" onClick={() => this.changeMonday(this.state.last_monday)}> Prev </button>
 	      		</div>
 	      	}
       		<div style={{float:"right"}}>
-      			<button class="button" onClick={this.toggleModal}> Help </button>
+      			<button className="button" onClick={this.toggleModal}> Help </button>
       		</div>
      		{ this.state.next_monday !== '' &&
 	      		<div style={{float:"right"}}>
-	      			<button class="button" onClick={() => this.changeMonday(this.state.next_monday)}> Next </button>
+	      			<button className="button" onClick={() => this.changeMonday(this.state.next_monday)}> Next </button>
 	      		</div>
 	      	}
       		<div>
-	      		{this.state.last_monday} (-- <strong class="header"> {this.state.this_monday} </strong> --) {this.state.next_monday}
+	      		{this.state.last_monday} (-- <strong className="header"> {this.state.this_monday} </strong> --) {this.state.next_monday}
       		</div>
       	</div>
       	<table className="centerTab">
@@ -232,15 +268,15 @@ class Questions extends Component {
       	<div style={{width:"100%", display:"flex"}}>
 	      	<div style={{height:"100px", width:"33%"}}>
 	      		What is going well?
-	      		<textarea onBlur={(e) => this.onTextChange(e,'going_well')} style={{width:"90%", height:"80%"}}></textarea>
+	      		<textarea value={this.state.going_well} onChange={this.onGoingWell} onBlur={(e) => this.onTextChange(e,'going_well')} style={{width:"90%", height:"80%"}} />
 	      	</div>
 	      	<div style={{height:"100px", width:"33%"}}>
 	      		Issues or Concerns?
-	      		<textarea onBlur={(e) => this.onTextChange(e,'issues')} style={{width:"90%", height:"80%"}}></textarea>
+	      		<textarea value={this.state.issues} onChange={this.onIssues}  onBlur={(e) => this.onTextChange(e,'issues')} style={{width:"90%", height:"80%"}} />
 	      	</div>
 	      	<div style={{height:"100px", width:"33%"}}>
 	      		What should we try?
-	      		<textarea onBlur={(e) => this.onTextChange(e,'what_to_try')} style={{width:"90%", height:"80%"}}></textarea>
+	      		<textarea value={this.state.what_to_try} onChange={this.onWhatToTry}  onBlur={(e) => this.onTextChange(e,'what_to_try')} style={{width:"90%", height:"80%"}} />
 	      	</div>
 	      </div>
       	<button onClick={this.onClick}> Check </button>
