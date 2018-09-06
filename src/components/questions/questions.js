@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import './questions.css';
 import Help from '../help';
+import LearnerRadarChart from '../graphs/learner-radar-chart';
+// import LearnerLineChart from '../graphs/learner-line-chart';
 
 class Questions extends Component {
 
@@ -18,6 +20,7 @@ class Questions extends Component {
 	 	this.state = {
 	 		isValid: [],
 	 		total: 0,
+	 		stretch_total: 0,
 	 		results: [],
 	 		questions: [],
 	 		last_monday: '',
@@ -26,7 +29,9 @@ class Questions extends Component {
 	 		going_well: '',
 	 		issues: '',
 	 		what_to_try: '',
-	 		isOpen: false,
+	 		is_help_open: false,
+	 		is_learner_radar_chart_open: false,
+	 		is_learner_line_chart_open: false,
 	 		disable: allow_input ? '' : 'disabled',
 	 	}
 
@@ -82,7 +87,8 @@ class Questions extends Component {
 		  	// console.log(data);
 		  	// console.log(results);
 		  	// console.log(isValid);
-		  	console.log(data.allow_input);
+		  	// console.log(data.allow_input);
+		  	const totals = this.totalValues(results, isValid);
 		    this.setState({
 		    	results,
 		    	isValid,
@@ -92,7 +98,8 @@ class Questions extends Component {
 		    	going_well: data.going_well,
 		    	issues: data.issues,
 		    	what_to_try: data.what_to_try,
-		    	total: this.totalValues(results, isValid),
+		    	total: totals.total,
+		    	stretch_total: totals.stretch_total,
 		    	disable: data.allow_input ? '' : 'disabled',
 		    })
 		  })
@@ -100,26 +107,52 @@ class Questions extends Component {
 	}
 
 	changeMonday = (monday) => {
-		console.log('changeMonday', monday);
+		// console.log('changeMonday', monday);
 		this.getResults(monday);
 	}
 
-	toggleModal = () => {
+	toggleHelpModal = () => {
 	    this.setState({
-	      isOpen: !this.state.isOpen
+	      is_help_open: !this.state.is_help_open
+	    });
+	}
+
+	toggleLearnerRadarChartModal = () => {
+		console.log('toggleLearnerRadarChartModal');
+	    this.setState({
+	      is_learner_radar_chart_open: !this.state.is_learner_radar_chart_open
+	    });
+	}
+
+	toggleLearnerLineChartModal = () => {
+		console.log('toggleLearnerRadarChartModal');
+	    this.setState({
+	      is_learner_line_chart_open: !this.state.is_learner_line_chart_open
 	    });
 	}
 
 	totalValues(map, isValid) {
-		let total = 0;
+		let total = 0,
+			stretch_total = 0;
+
 		Object.keys(map).forEach((value) => {
 			if(isValid[value]) {
-				var v = parseInt(map[value], 10);
-				if (v > 5) v = 5;
+				var v = parseInt(map[value], 10),
+					s = 0;
+				if (v > 5) {
+					s = v - 5;
+					v = 5;
+
+				}
 				total += v;
+				stretch_total += s;
+
 			}
 		})
-		return total
+		return {
+			total: total, 
+			stretch_total: stretch_total,
+		}
 	}
 
 	isValid(value) {
@@ -136,16 +169,19 @@ class Questions extends Component {
 	
 	onQchange = (event, code) => {
 		const isValid = this.state.isValid;
-		isValid[code] = this.isValid(event.target.value)
+		isValid[code] = this.isValid(event.target.value);
 		this.setState ({
 			isValid,
 		});
 		const results = this.state.results;
 		results[code] = event.target.value;
+		const totals = this.totalValues(results, isValid);
 		this.setState ({
 			results,
-	 		total: this.totalValues(results, isValid),
+	    	total: totals.total,
+    		stretch_total: totals.stretch_total,
 		});
+		this.styleInput(event.target, isValid[code])
 	}	
 
 	onQblur = (event, code) => {
@@ -156,13 +192,27 @@ class Questions extends Component {
 		this.setState ({
 			isValid,
 		});
+
 		if (isValid[code]) {
-			event.target.style.background="White";
-			// console.log('lets update:', code, event.target.value);
 			this.updateServer('score', code, event.target.value);
-		} else {
-			event.target.style.background="Red";
 		}
+		this.styleInput(event.target, isValid[code])
+		// if (isValid[code]) {
+		// 	event.target.style.background="White";
+		// 	// console.log('lets update:', code, event.target.value);
+		// 	this.updateServer('score', code, event.target.value);
+		// } else {
+		// 	event.target.style.background="Red";
+		// }
+	}
+
+	styleInput = (target, isValid) => {
+		if (isValid) {
+			target.style.background="White";
+		} else {
+			target.style.background="Red";
+		}
+
 	}
 
 	updateServer = (type, code, value) => {
@@ -213,8 +263,8 @@ class Questions extends Component {
   			<td> 
   				<input disabled={this.state.disable}
   					style={{width:"30px"}}
-  					onChange={(e) => this.onQchange(e,q.code)} 
-  					onBlur={(e) => this.onQblur(e,q.code)} 
+  					onChange={(e) => this.onQchange(e, q.code)} 
+  					onBlur={(e) => this.onQblur(e, q.code)} 
   					id='{i.toString()}' 
   					value={this.state.results[q.code]} 
   				/> 
@@ -233,9 +283,19 @@ class Questions extends Component {
       <div className="questions" >
       	<div>
 
-	        <Help show={this.state.isOpen}
-	          onClose={this.toggleModal}>
+	        <Help 
+	        	show={this.state.is_help_open}
+	        	onClose={this.toggleHelpModal}
+	        >
 	        </Help>
+
+	        <LearnerRadarChart 
+	        	show={this.state.is_learner_radar_chart_open}
+	        	onClose={this.toggleLearnerRadarChartModal}
+	        	questions={this.state.questions}
+	        	results={this.state.results}
+	        />
+
 
       	</div>
       	<div style={{width:"100%"}}>
@@ -245,24 +305,34 @@ class Questions extends Component {
 	      		</div>
 	      	}
       		<div style={{float:"right"}}>
-      			<button className="button" onClick={this.toggleModal}> Help </button>
+      			<button className="button" onClick={this.toggleHelpModal}> Help </button>
       		</div>
+
+      		<div style={{float:"right"}}>
+      			<button className="button" onClick={this.toggleLearnerLineChartModal}> Line </button>
+      		</div>
+      		
+      		<div style={{float:"right"}}>
+      			<button className="button" onClick={this.toggleLearnerRadarChartModal}> Radar </button>
+      		</div>
+
      		{ this.state.next_monday !== '' &&
 	      		<div style={{float:"right"}}>
 	      			<button className="button" onClick={() => this.changeMonday(this.state.next_monday)}> Next </button>
 	      		</div>
 	      	}
+
       		<div>
 	      		{this.state.last_monday} (-- <strong className="header"> {this.state.this_monday} </strong> --) {this.state.next_monday}
       		</div>
       	</div>
       	<table className="centerTab">
       		<tbody>
-	      		{questions}
 	      		<tr>
-	      			<td className='right'> <h3>The total is</h3></td>
-	      			<td> <h3>{this.state.total} </h3> </td>
+	      			<td className='right'> <h3>Base Total / Stretch Total </h3></td>
+	      			<td> <h3>{this.state.total} / {this.state.stretch_total} </h3> </td>
 	      		</tr>
+	      		{questions}
       		</tbody>
       	</table>
       	<div style={{width:"100%", display:"flex"}}>
