@@ -149,6 +149,10 @@ class Questions extends Component {
 		};
 	}
 
+	maxPoints(value) {
+		return value > 5 ? 5 : value;
+	}
+
 	isValid(value) {
 		if (value.length !== 1) {
 			return false;
@@ -238,6 +242,9 @@ class Questions extends Component {
 
 	onClick = e => {
 		console.log("Just a click");
+		console.log('0',this.maxPoints(0));
+		console.log('5',this.maxPoints(5));
+		console.log('7',this.maxPoints(7));
 	};
 	// value={this.state.results[q.code]}
 
@@ -271,7 +278,7 @@ class Questions extends Component {
 							<div
 								style={{
 									width:
-										(wi / 5) * this.state.results[q.code] +
+										(wi / 5) * (this.state.results[q.code] > 5 ? 5 : this.state.results[q.code]) +
 										"px",
 									height: "15px",
 									background: "blue"
