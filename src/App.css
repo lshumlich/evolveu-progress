@@ -28,29 +28,38 @@
 }
 
 @keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-
 @keyframes App-logo-evolveu {
-  0% { transform: rotate(10deg); }
-  50% { transform: rotate(-10deg); }
-  100% { transform: rotate(10deg); }
+  0% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(-10deg);
+  }
+  100% {
+    transform: rotate(10deg);
+  }
 }
 
 .button {
-    background-color: #97c444; /* Green */
-    border: none;
-    color: white;
-    padding: 8px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 1px;
-    cursor: pointer;
-    border-radius: 34px;
+  background-color: #97c444; /* Green */
+  border: none;
+  color: white;
+  padding: 8px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 1px;
+  cursor: pointer;
+  border-radius: 34px;
 }
 
 .header {

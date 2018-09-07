@@ -1,5 +1,3 @@
-
-
 .right {
 	text-align: right;
 }
@@ -13,7 +11,7 @@ table {
 
 .questions {
 	/*outline-style: solid;*/
-	max-width:90%;
+	max-width: 90%;
 	margin: auto;
 	padding: 15px;
 }
