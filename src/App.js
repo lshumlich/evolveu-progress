@@ -40,7 +40,12 @@ class App extends Component {
     const uuid = event.target.value;
     // console.log('We have a register...', event)
     fetch(process.env.REACT_APP_API + "/register/" + uuid)
-      .then(response => response.json())
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        throw new Error('Error status: ' + response.status);
+      })
       .then(data => {
         console.log(data);
         if ("id" in data) {
@@ -55,10 +60,56 @@ class App extends Component {
     // this.setState({input: event.target.value});
   };
 
+  onGoogleSignonSuccess = (response) => {
+    // console.log('googleSuccess........',response);
+    // let profile = response.getBasicProfile();
+    let id_token = response.getAuthResponse().id_token;
+    // console.log('authToken', profile.getId());
+    // console.log('id_token', id_token);
+    // console.log('name', profile.getName());
+    fetch(process.env.REACT_APP_API + "/gsignon", {
+      method: "post",
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        idtoken: id_token,
+      })
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        throw new Error('Error status: ' + response.status);
+      })
+    .then(data => {
+        // console.log('---Response from server---', data);
+        // console.log(data);
+        if ("id" in data) {
+          this.setState({
+            uuid: data.uuid,
+            id: data.id,
+            name: data.name
+          });
+        }
+      })
+    .catch(err => console.log(err));
+  };
+
+  onGoogleSignonFail = (response) => {
+    console.log('googleFail........',response);
+  };
+
   render() {
     let body;
     if (this.state.uuid === "") {
-      body = <Register onRegister={this.onRegister} />;
+      body = <Register 
+                onRegister={this.onRegister} 
+                onGoogleSignonSuccess={this.onGoogleSignonSuccess}
+                onGoogleSignonFail={this.onGoogleSignonFail}
+
+              />;
     } else {
       body = <Questions uuid={this.state.uuid} />;
     }
