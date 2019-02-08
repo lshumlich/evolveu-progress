@@ -1,28 +1,30 @@
 import React, { Component } from "react";
-import GoogleLogin from 'react-google-login'; 
 
 class Register extends Component {
+
+  onClick = e => {
+    let name = document.getElementById("inName").value;
+    // console.log("Just a clicked:", name);
+    this.props.onRegister(name);
+  };
+
   render() {
     return (
       <div>
         <br />
         <br />
-        <GoogleLogin
-          clientId="225894951024-d2b5jugscfmfsp8fr6vd5mqhfl5si3uq.apps.googleusercontent.com"
-          buttonText="Sign in with Google"
-          onSuccess={this.props.onGoogleSignonSuccess}
-          onFailure={this.props.onGoogleSignonFail}
-        />
         <br />
         <br />
-        <h3 className="header"> Please enter your UUID (will be deprecated)</h3>
+        <h3 className="header"> Welcome</h3>
+        <h3 className="header"> Please Confirm your name </h3>
         <input
+          id="inName"
           style={{ width: "260px" }}
-          onBlur={e => this.props.onRegister(e)}
+          defaultValue={this.props.name}
         />
         <br />
         <br />
-        <button className="button">Register</button>
+        <button className="button" onClick={this.onClick}>Register</button>
       </div>
     );
   }

@@ -11,6 +11,7 @@ green #97c444 / rgb(151, 196, 68)
 import React, { Component } from "react";
 import evolveu from "./EvolveU.jpeg";
 import Questions from "./components/questions/questions";
+import SignIn from "./components/signin";
 import Register from "./components/register";
 import "./App.css";
 
@@ -18,52 +19,56 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      questions: [],
-      results: [],
-      uuid: "",
+      user_token: "",
       name: "",
-      id: ""
+      new_user: "",
+      admin: "",
+      message: "",
     };
   }
-
+  //
+  // Check to see if this user has a valid session from earlier.
+  // If they do we don't require a signon
+  //
   componentDidMount = () => {
-    // fetch('http://localhost:5000/questions')
-    fetch(process.env.REACT_APP_API + "/questions")
-      .then(response => response.json())
-      .then(data => {
-        this.setState({ questions: data });
+    const user_token = localStorage.getItem('user_token');
+    // console.log('App.componentDidMount', user_token);
+    if (user_token) {     // Check to see if it is still a valid token to the server
+      fetch(process.env.REACT_APP_API + "/validuser", {
+        method: "post",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          user_token: user_token
+        })
       })
-      .catch(err => console.log(err));
-  };
-
-  onRegister = event => {
-    const uuid = event.target.value;
-    // console.log('We have a register...', event)
-    fetch(process.env.REACT_APP_API + "/register/" + uuid)
       .then(response => {
         if (response.ok) {
           return response.json()
         }
         throw new Error('Error status: ' + response.status);
-      })
+      })      
       .then(data => {
-        console.log(data);
-        if ("id" in data) {
-          this.setState({
-            uuid: uuid,
-            id: data.id,
-            name: data.name
-          });
-        }
+        this.setState({
+          user_token: user_token,
+          name: data.name
+        });
       })
-      .catch(err => console.log(err));
-    // this.setState({input: event.target.value});
+      .catch(err => console.log("It's ok just not a valid user.",err));
+    }
+    // console.log('After component mounted:', this.state.user_token);
   };
 
+  //
+  // Use Google Auth0
+  //
   onGoogleSignonSuccess = (response) => {
     // console.log('googleSuccess........',response);
     // let profile = response.getBasicProfile();
-    let id_token = response.getAuthResponse().id_token;
+    let user_token = response.getAuthResponse().id_token;
     // console.log('authToken', profile.getId());
     // console.log('id_token', id_token);
     // console.log('name', profile.getName());
@@ -73,47 +78,112 @@ class App extends Component {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json"
       },
+      credentials: 'include',
       body: JSON.stringify({
-        idtoken: id_token,
+        user_token: user_token,
       })
     })
       .then(response => {
         if (response.ok) {
           return response.json()
         }
+        this.setState({message: "Error from server: " + response.status});
         throw new Error('Error status: ' + response.status);
       })
     .then(data => {
         // console.log('---Response from server---', data);
         // console.log(data);
-        if ("id" in data) {
-          this.setState({
-            uuid: data.uuid,
-            id: data.id,
-            name: data.name
-          });
-        }
+        this.setState({
+          user_token: user_token,
+          name: data.name,
+          admin: data.admin,
+          new_user: data.new_user,
+        });
+        localStorage.setItem('user_token', user_token);
+        console.log("*** token set");
       })
     .catch(err => console.log(err));
+    console.log('Admin:', this.state.admin);
   };
 
   onGoogleSignonFail = (response) => {
     console.log('googleFail........',response);
   };
 
+  //
+  // Register a new user to the system
+  //
+  onRegister = name => {
+    fetch(process.env.REACT_APP_API + "/register", {
+      method: "post",
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "application/json",
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        user_token: this.state.user_token,
+        name: name,
+      })
+    })
+    .then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        this.setState({message: "Error from server: " + response.status});
+        throw new Error('Error status: ' + response.status);
+    })
+    .then(data => {
+        this.setState({
+          name: data.name,
+          new_user: false,
+        })
+      })
+    .catch(err => console.log(err));
+  };
+
+  onSignout = () => {
+    // console.log("We should be doing a signout");
+    localStorage.removeItem('user_token');
+    fetch(process.env.REACT_APP_API + "/signout", {
+      method: "post",
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "application/json"
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        user_token: this.state.user_token,
+      })
+    })
+    this.setState({user_token: ""});
+  }
+
   render() {
     let body;
-    if (this.state.uuid === "") {
-      body = <Register 
-                onRegister={this.onRegister} 
+    // console.log("At render user_token:", this.state.user_token);
+    if (this.state.message) {
+      body = <h1> {this.state.message} </h1>;
+    } else if (! this.state.user_token) {
+      body = <SignIn 
+                onSignin={this.onSignin} 
                 onGoogleSignonSuccess={this.onGoogleSignonSuccess}
                 onGoogleSignonFail={this.onGoogleSignonFail}
 
               />;
+    } else if (this.state.new_user){
+      body = <Register 
+                onRegister={this.onRegister}
+                name={this.state.name}
+              />;
     } else {
-      body = <Questions uuid={this.state.uuid} />;
+      body = <Questions 
+                user_token={this.state.user_token} 
+                onSignout = {this.onSignout}
+                admin={this.state.admin}
+              />;
     }
-
+  
     return (
       <div className="App">
         <header className="App-header">
@@ -124,7 +194,7 @@ class App extends Component {
             alt="logo"
           />
           <h1 className="App-title">
-            Welcome {this.state.name} to EvolveU Evaluation Criteria
+            Welcome {this.state.name} to EvolveU Progress Reporting
           </h1>
         </header>
         {body}

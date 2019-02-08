@@ -32,7 +32,7 @@ class Questions extends Component {
 
 	componentDidMount = () => {
 		// console.log('Questions.componentDidMount');
-		fetch(process.env.REACT_APP_API + "/questions")
+		fetch(process.env.REACT_APP_API + "/questions", {credentials: 'include'})
 			.then(response => response.json())
 			.then(data => {
 				const isValid = {};
@@ -54,52 +54,57 @@ class Questions extends Component {
 
 	getResults = date => {
 		// console.log('Questions.getResults');
-		fetch(
-			process.env.REACT_APP_API +
-				"/results/" +
-				this.props.uuid +
-				"/" +
-				date
-		)
-			.then(response => response.json())
-			.then(data => {
-				// console.log(data);
-				// const results = this.state.results;
-				// const isValid = this.state.isValid;
-				const results = {};
-				const isValid = {};
 
-				this.state.questions.forEach(value => {
-					results[value.code] = 0;
-					isValid[value.code] = true;
-				});
-
-				if (data.results) {
-					Object.keys(data.results).forEach(value => {
-						// console.log('--- adding a result', value, data.results[value])
-						results[value] = data.results[value];
-					});
-				}
-				// console.log(data);
-				// console.log(results);
-				// console.log(isValid);
-				// console.log(data.allow_input);
-				const totals = this.totalValues(results, isValid);
-				this.setState({
-					results,
-					isValid,
-					last_monday: data.last_monday,
-					this_monday: data.this_monday,
-					next_monday: data.next_monday,
-					going_well: data.going_well,
-					issues: data.issues,
-					what_to_try: data.what_to_try,
-					total: totals.total,
-					stretch_total: totals.stretch_total,
-					disable: data.allow_input ? "" : "disabled"
-				});
+		fetch(process.env.REACT_APP_API + "/results/" + date, {
+			method: "post",
+			headers: {
+				Accept: "application/json, text/plain, */*",
+				"Content-Type": "application/json",
+			},
+			credentials: 'include',
+			body: JSON.stringify({
+				user_token: this.props.user_token,
 			})
-			.catch(err => console.log(err));
+		})
+		.then(response => response.json())
+		.then(data => {
+			// console.log(data);
+			// const results = this.state.results;
+			// const isValid = this.state.isValid;
+			const results = {};
+			const isValid = {};
+
+			this.state.questions.forEach(value => {
+				results[value.code] = 0;
+				isValid[value.code] = true;
+			});
+
+			if (data.results) {
+				Object.keys(data.results).forEach(value => {
+					// console.log('--- adding a result', value, data.results[value])
+					results[value] = data.results[value];
+				});
+			}
+			// console.log(data);
+			// console.log(results);
+			// console.log(isValid);
+			// console.log(data.allow_input);
+			const totals = this.totalValues(results, isValid);
+			this.setState({
+				results,
+				isValid,
+				last_monday: data.last_monday,
+				this_monday: data.this_monday,
+				next_monday: data.next_monday,
+				going_well: data.going_well,
+				issues: data.issues,
+				what_to_try: data.what_to_try,
+				total: totals.total,
+				stretch_total: totals.stretch_total,
+				disable: data.allow_input ? "" : "disabled"
+			});
+		})
+		.catch(err => console.log(err));
 	};
 
 	changeMonday = monday => {
@@ -114,14 +119,14 @@ class Questions extends Component {
 	};
 
 	toggleLearnerRadarChartModal = () => {
-		console.log("toggleLearnerRadarChartModal");
+		// console.log("toggleLearnerRadarChartModal");
 		this.setState({
 			is_learner_radar_chart_open: !this.state.is_learner_radar_chart_open
 		});
 	};
 
 	toggleLearnerLineChartModal = () => {
-		console.log("toggleLearnerRadarChartModal");
+		// console.log("toggleLearnerRadarChartModal");
 		this.setState({
 			is_learner_line_chart_open: !this.state.is_learner_line_chart_open
 		});
@@ -210,13 +215,14 @@ class Questions extends Component {
 			method: "post",
 			headers: {
 				Accept: "application/json, text/plain, */*",
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
 			},
+			credentials: 'include',
 			body: JSON.stringify({
+				user_token: this.props.user_token,
 				type: type,
 				code: code,
 				value: value,
-				uuid: this.props.uuid,
 				date: this.state.this_monday
 			})
 		}).then(res => res.json());
@@ -241,10 +247,11 @@ class Questions extends Component {
 	};
 
 	onClick = e => {
-		console.log("Just a click");
-		console.log('0',this.maxPoints(0));
-		console.log('5',this.maxPoints(5));
-		console.log('7',this.maxPoints(7));
+		// console.log("Just a click");
+		// window.open(process.env.REACT_APP_API + "/progress/" + this.state.this_monday + "/", "_blank");
+		// console.log('0',this.maxPoints(0));
+		// console.log('5',this.maxPoints(5));
+		// console.log('7',this.maxPoints(7));
 	};
 	// value={this.state.results[q.code]}
 
@@ -336,10 +343,10 @@ class Questions extends Component {
 					<div style={{ float: "right" }}>
 						<button
 							className="button"
-							onClick={this.toggleLearnerLineChartModal}
+							onClick={this.props.onSignout}
 						>
 							{" "}
-							Line{" "}
+							Sign out{" "}
 						</button>
 					</div>
 
@@ -396,7 +403,7 @@ class Questions extends Component {
 				</table>
 				<div style={{ width: "100%", display: "flex" }}>
 					<div style={{ height: "100px", width: "33%" }}>
-						What is going well?
+						What is going well / accomplishments?
 						<textarea
 							value={this.state.going_well}
 							onChange={this.onGoingWell}
@@ -423,8 +430,12 @@ class Questions extends Component {
 						/>
 					</div>
 				</div>
+{/*
 				<button onClick={this.onClick}> Check </button>
 				<button onClick={this.onClick} />
+				<br/>
+				<a href="http://localhost:8000/progress/2019-02-04/">Progress Report</a>
+*/}								
 			</div>
 		);
 	}
