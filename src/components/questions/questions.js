@@ -20,6 +20,7 @@ class Questions extends Component {
 			going_well: "",
 			issues: "",
 			what_to_try: "",
+			exercise: "",
 			is_help_open: false,
 			is_learner_radar_chart_open: false,
 			is_learner_line_chart_open: false,
@@ -99,6 +100,7 @@ class Questions extends Component {
 				going_well: data.going_well,
 				issues: data.issues,
 				what_to_try: data.what_to_try,
+				exercise: data.exercise,
 				total: totals.total,
 				stretch_total: totals.stretch_total,
 				disable: data.allow_input ? "" : "disabled"
@@ -244,6 +246,14 @@ class Questions extends Component {
 
 	onWhatToTry = event => {
 		this.setState({ what_to_try: event.target.value });
+	};
+
+	onExercise = event => {
+		const val = event.target.value;
+		console.log("onExercise", val);
+		if(val.length < 4 && !isNaN(val) ) {
+			this.setState({ exercise: val });
+		}
 	};
 
 	onClick = e => {
@@ -401,6 +411,17 @@ class Questions extends Component {
 						{questions}
 					</tbody>
 				</table>
+				<br/>
+				<div>
+					What Competency # are you on? &nbsp; &nbsp; &nbsp;
+					<input
+						value={this.state.exercise}
+						onChange={this.onExercise}
+						onBlur={e => this.onTextChange(e, "exercise")}
+						style={{width: "30px"}}
+					/>
+				</div>
+				<br/>
 				<div style={{ width: "100%", display: "flex" }}>
 					<div style={{ height: "100px", width: "33%" }}>
 						What is going well / accomplishments?

@@ -5,6 +5,7 @@ EvolveU: Colors
 blue #42a0bc / rgb(66, 160, 188)
 green #97c444 / rgb(151, 196, 68)
 
+for testing ./start
 
 */
 
@@ -66,6 +67,7 @@ class App extends Component {
   // Use Google Auth0
   //
   onGoogleSignonSuccess = (response) => {
+    console.log("Starting onGoogleSignonSuccess:",  Date.now());
     // console.log('googleSuccess........',response);
     // let profile = response.getBasicProfile();
     let user_token = response.getAuthResponse().id_token;
@@ -101,6 +103,7 @@ class App extends Component {
         });
         localStorage.setItem('user_token', user_token);
         console.log("*** token set");
+        console.log("Ending onGoogleSignonSuccess:",  Date.now());
       })
     .catch(err => console.log(err));
     console.log('Admin:', this.state.admin);
