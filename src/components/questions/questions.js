@@ -249,8 +249,12 @@ class Questions extends Component {
 	};
 
 	onExercise = event => {
-		const val = event.target.value;
-		console.log("onExercise", val);
+		let val = event.target.value;
+
+		if (val.length > 3) {
+			val = val.substring(0,3);
+		}
+
 		if(val.length < 4 && !isNaN(val) ) {
 			this.setState({ exercise: val });
 		}
@@ -393,6 +397,15 @@ class Questions extends Component {
 						--) {this.state.next_monday}
 					</div>
 				</div>
+				<div id="Competency">
+					What Competency # are you on? &nbsp; &nbsp; &nbsp;
+					<input
+						value={this.state.exercise}
+						onChange={this.onExercise}
+						onBlur={e => this.onTextChange(e, "exercise")}
+						style={{width: "30px"}}
+					/>
+				</div>
 				<table className="centerTab">
 					<tbody>
 						<tr>
@@ -411,16 +424,6 @@ class Questions extends Component {
 						{questions}
 					</tbody>
 				</table>
-				<br/>
-				<div>
-					What Competency # are you on? &nbsp; &nbsp; &nbsp;
-					<input
-						value={this.state.exercise}
-						onChange={this.onExercise}
-						onBlur={e => this.onTextChange(e, "exercise")}
-						style={{width: "30px"}}
-					/>
-				</div>
 				<br/>
 				<div style={{ width: "100%", display: "flex" }}>
 					<div style={{ height: "100px", width: "33%" }}>

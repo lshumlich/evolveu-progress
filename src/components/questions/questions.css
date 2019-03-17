@@ -16,6 +16,15 @@ table {
 	padding: 15px;
 }
 
+#Competency {
+	max-width: 50%;
+	margin: auto;
+	margin-top: 30px;
+	padding: 20px;
+	border: 2px solid blue;
+	border-radius: 5px;
+}
+
 .lfslfs {
 	outline-style: solid;
 }

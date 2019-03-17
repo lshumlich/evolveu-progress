@@ -65,3 +65,7 @@
 .header {
   color: #42a0bc;
 }
+
+.wait {
+  cursor: wait;
+}

@@ -25,6 +25,7 @@ class App extends Component {
       new_user: "",
       admin: "",
       message: "",
+      wait: "",
     };
   }
   //
@@ -32,8 +33,12 @@ class App extends Component {
   // If they do we don't require a signon
   //
   componentDidMount = () => {
+    this.setState({
+      wait: "Please Wait",
+    });
+
     const user_token = localStorage.getItem('user_token');
-    // console.log('App.componentDidMount', user_token);
+
     if (user_token) {     // Check to see if it is still a valid token to the server
       fetch(process.env.REACT_APP_API + "/validuser", {
         method: "post",
@@ -55,8 +60,10 @@ class App extends Component {
       .then(data => {
         this.setState({
           user_token: user_token,
-          name: data.name
+          name: data.name,
+          wait: "",
         });
+
       })
       .catch(err => console.log("It's ok just not a valid user.",err));
     }
@@ -67,7 +74,10 @@ class App extends Component {
   // Use Google Auth0
   //
   onGoogleSignonSuccess = (response) => {
-    console.log("Starting onGoogleSignonSuccess:",  Date.now());
+    this.setState({
+      wait: "Please Wait",
+    });
+    // console.log("Starting onGoogleSignonSuccess:",  Date.now());
     // console.log('googleSuccess........',response);
     // let profile = response.getBasicProfile();
     let user_token = response.getAuthResponse().id_token;
@@ -100,6 +110,7 @@ class App extends Component {
           name: data.name,
           admin: data.admin,
           new_user: data.new_user,
+          wait: "",
         });
         localStorage.setItem('user_token', user_token);
         console.log("*** token set");
@@ -164,9 +175,11 @@ class App extends Component {
 
   render() {
     let body;
-    // console.log("At render user_token:", this.state.user_token);
+
     if (this.state.message) {
       body = <h1> {this.state.message} </h1>;
+    } else if (this.state.wait) {
+      body = <h1> {this.state.wait} </h1>;
     } else if (! this.state.user_token) {
       body = <SignIn 
                 onSignin={this.onSignin} 
@@ -186,9 +199,11 @@ class App extends Component {
                 admin={this.state.admin}
               />;
     }
-  
+
+    const wait = this.state.wait ? 'App wait' : 'App';
+
     return (
-      <div className="App">
+      <div className={wait}>
         <header className="App-header">
           <img
             src={evolveu}
