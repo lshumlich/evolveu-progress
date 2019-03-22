@@ -65,7 +65,12 @@ class App extends Component {
         });
 
       })
-      .catch(err => console.log("It's ok just not a valid user.",err));
+      .catch(err => {
+        console.log("It's ok just not a valid user.",err);
+        this.setState({
+          wait: "",
+        });
+      })
     }
     // console.log('After component mounted:', this.state.user_token);
   };
