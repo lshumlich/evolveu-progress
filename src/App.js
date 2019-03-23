@@ -121,12 +121,21 @@ class App extends Component {
         console.log("*** token set");
         console.log("Ending onGoogleSignonSuccess:",  Date.now());
       })
-    .catch(err => console.log(err));
-    console.log('Admin:', this.state.admin);
+    .catch(err => {
+      console.log(err)
+      this.setState({
+        wait: "Error in Google Signon Success",
+      });
+    });
+
+    // console.log('Admin:', this.state.admin);
   };
 
   onGoogleSignonFail = (response) => {
     console.log('googleFail........',response);
+    this.setState({
+      wait: "Google Signon Failed",
+    });
   };
 
   //
