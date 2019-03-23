@@ -33,13 +33,15 @@ class App extends Component {
   // If they do we don't require a signon
   //
   componentDidMount = () => {
-    this.setState({
-      wait: "Please Wait",
-    });
 
     const user_token = localStorage.getItem('user_token');
 
     if (user_token) {     // Check to see if it is still a valid token to the server
+
+      this.setState({
+        wait: "Please Wait",
+      });
+      
       fetch(process.env.REACT_APP_API + "/validuser", {
         method: "post",
         headers: {
@@ -167,7 +169,10 @@ class App extends Component {
           new_user: false,
         })
       })
-    .catch(err => console.log(err));
+    .catch(err => {
+      console.log(err)
+      this.setState({message: "Error from server: " + err});
+    });
   };
 
   onSignout = () => {
