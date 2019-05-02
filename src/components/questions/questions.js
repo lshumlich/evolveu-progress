@@ -249,15 +249,16 @@ class Questions extends Component {
 	};
 
 	onExercise = event => {
-		let val = event.target.value;
+		// let val = event.target.value;
 
-		if (val.length > 3) {
-			val = val.substring(0,3);
-		}
+		// if (val.length > 3) {
+		// 	val = val.substring(0,3);
+		// }
 
-		if(val.length < 4 && !isNaN(val) ) {
-			this.setState({ exercise: val });
-		}
+		// if(val.length < 4 && !isNaN(val) ) {
+		// 	this.setState({ exercise: val });
+		// }
+		this.setState({ exercise: event.target.value });
 	};
 
 	onClick = e => {
@@ -400,6 +401,7 @@ class Questions extends Component {
 				<div id="Competency">
 					What Competency # are you on? &nbsp; &nbsp; &nbsp;
 					<input
+						disabled={this.state.disable}
 						value={this.state.exercise}
 						onChange={this.onExercise}
 						onBlur={e => this.onTextChange(e, "exercise")}
@@ -429,6 +431,7 @@ class Questions extends Component {
 					<div style={{ height: "100px", width: "33%" }}>
 						What is going well / accomplishments?
 						<textarea
+							disabled={this.state.disable}
 							value={this.state.going_well}
 							onChange={this.onGoingWell}
 							onBlur={e => this.onTextChange(e, "going_well")}
@@ -438,6 +441,7 @@ class Questions extends Component {
 					<div style={{ height: "100px", width: "33%" }}>
 						Issues or Concerns?
 						<textarea
+							disabled={this.state.disable}
 							value={this.state.issues}
 							onChange={this.onIssues}
 							onBlur={e => this.onTextChange(e, "issues")}
@@ -447,6 +451,7 @@ class Questions extends Component {
 					<div style={{ height: "100px", width: "33%" }}>
 						What should we try?
 						<textarea
+							disabled={this.state.disable}
 							value={this.state.what_to_try}
 							onChange={this.onWhatToTry}
 							onBlur={e => this.onTextChange(e, "what_to_try")}
