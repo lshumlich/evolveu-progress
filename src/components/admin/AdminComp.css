@@ -1,0 +1,14 @@
+table {
+	display: block;
+	align-items: center;
+	max-width: 90%;
+	border-spacing: 10px;
+}
+
+thead, tbody { display: block; }
+
+.scroll_tbody {
+    height: 400px;       /* Just for the demo          */
+    overflow-y: auto;    /* Trigger vertical scroll    */
+    overflow-x: hidden;  /* Hide the horizontal scroll */
+}

@@ -12,6 +12,7 @@ for testing ./start
 import React, { Component } from "react";
 import evolveu from "./EvolveU.jpeg";
 import Questions from "./components/questions/questions";
+import AdminComp from "./components/admin/AdminComp";
 import SignIn from "./components/signin";
 import Register from "./components/register";
 import "./App.css";
@@ -24,6 +25,7 @@ class App extends Component {
       name: "",
       new_user: "",
       admin: "",
+      admin_func: false,
       message: "",
       wait: "",
     };
@@ -60,12 +62,13 @@ class App extends Component {
         throw new Error('Error status: ' + response.status);
       })      
       .then(data => {
+        // console.log('---Response from server---', data);
         this.setState({
           user_token: user_token,
           name: data.name,
+          admin: data.admin,
           wait: "",
         });
-
       })
       .catch(err => {
         console.log("It's ok just not a valid user.",err);
@@ -120,8 +123,8 @@ class App extends Component {
           wait: "",
         });
         localStorage.setItem('user_token', user_token);
-        console.log("*** token set");
-        console.log("Ending onGoogleSignonSuccess:",  Date.now());
+        // console.log("*** token set");
+        // console.log("Ending onGoogleSignonSuccess:",  Date.now());
       })
     .catch(err => {
       console.log(err)
@@ -192,6 +195,16 @@ class App extends Component {
     this.setState({user_token: ""});
   }
 
+  onAdmin = () => {
+    // console.log('Should be in admin');
+    this.setState({admin_func: true});
+  }
+
+  offAdmin = () => {
+    // console.log('Should be off in admin');
+    this.setState({admin_func: false});
+  }
+
   render() {
     let body;
 
@@ -211,6 +224,17 @@ class App extends Component {
                 onRegister={this.onRegister}
                 name={this.state.name}
               />;
+    } else if (this.state.admin_func) {
+      body = <AdminComp 
+                offAdmin={this.offAdmin}
+                user_token={this.state.user_token} 
+              />
+      // body = 
+      //   <div>
+      //     <h1 onClick={this.offAdmin}>Return from Admin Functions</h1>
+
+      //   </div>
+      // this.setState({admin_func: false});
     } else {
       body = <Questions 
                 user_token={this.state.user_token} 
@@ -220,6 +244,10 @@ class App extends Component {
     }
 
     const wait = this.state.wait ? 'App wait' : 'App';
+
+    const show_admin = this.state.admin ? <div onClick={this.onAdmin}> Admin Functions</div> : "";
+
+    // console.log('State-->', this.state);
 
     return (
       <div className={wait}>
@@ -234,6 +262,7 @@ class App extends Component {
             Welcome {this.state.name} to EvolveU Progress Reporting
           </h1>
         </header>
+        <h2>{show_admin}</h2>
         {body}
       </div>
     );
