@@ -24,11 +24,16 @@ class Questions extends Component {
 			is_help_open: false,
 			is_learner_radar_chart_open: false,
 			is_learner_line_chart_open: false,
-			disable: allow_input ? "" : "disabled"
+			disable: allow_input ? "" : "disabled",
+
+			compNo: '',
+			predcompdate: '',
+			industryproj: '',
+
 		};
 
 		this.onQchange = this.onQchange.bind(this);
-		this.onQBlur = this.onQblur.bind(this);
+		// this.updateServerScore = this.updateServerScore.bind(this);
 	}
 
 	componentDidMount = () => {
@@ -69,7 +74,7 @@ class Questions extends Component {
 		})
 		.then(response => response.json())
 		.then(data => {
-			// console.log(data);
+			// console.log('----data:', data);
 			// const results = this.state.results;
 			// const isValid = this.state.isValid;
 			const results = {};
@@ -101,6 +106,8 @@ class Questions extends Component {
 				issues: data.issues,
 				what_to_try: data.what_to_try,
 				exercise: data.exercise,
+				industryproj: data.industryproj,
+				predcompdate: data.predcompdate,
 				total: totals.total,
 				stretch_total: totals.stretch_total,
 				disable: data.allow_input ? "" : "disabled"
@@ -189,20 +196,6 @@ class Questions extends Component {
 		this.styleInput(event.target, isValid[code]);
 	};
 
-	onQblur = (event, code) => {
-		// console.log(code, event.target.value);
-		// console.log('---should we change it', this.state.results[code]);
-		const isValid = this.state.isValid;
-		isValid[code] = this.isValid(event.target.value);
-		this.setState({
-			isValid
-		});
-
-		if (isValid[code]) {
-			this.updateServer("score", code, event.target.value);
-		}
-		this.styleInput(event.target, isValid[code]);
-	};
 
 	styleInput = (target, isValid) => {
 		if (isValid) {
@@ -231,47 +224,34 @@ class Questions extends Component {
 		// .then(res => console.log(res));
 	};
 
-	onTextChange = (event, code) => {
-		// console.log('onTextChange', code, event.target.value);
-		this.updateServer("text", code, event.target.value);
+	updateServerScore = (event, code) => {
+		// console.log(code, event.target.value);
+		// console.log('---should we change it', this.state.results[code]);
+		const isValid = this.state.isValid;
+		isValid[code] = this.isValid(event.target.value);
+		this.setState({
+			isValid
+		});
+
+		if (isValid[code]) {
+			this.updateServer("score", code, event.target.value);
+		}
+		this.styleInput(event.target, isValid[code]);
 	};
 
-	onGoingWell = event => {
-		this.setState({ going_well: event.target.value });
+	updateServerText = (event) => {
+		// console.log('updateServerText', event.target.name, event.target.value);
+		this.onHandleChange(event)
+		this.updateServer("text", event.target.name, event.target.value);
 	};
 
-	onIssues = event => {
-		this.setState({ issues: event.target.value });
-	};
-
-	onWhatToTry = event => {
-		this.setState({ what_to_try: event.target.value });
-	};
-
-	onExercise = event => {
-		// let val = event.target.value;
-
-		// if (val.length > 3) {
-		// 	val = val.substring(0,3);
-		// }
-
-		// if(val.length < 4 && !isNaN(val) ) {
-		// 	this.setState({ exercise: val });
-		// }
-		this.setState({ exercise: event.target.value });
-	};
-
-	onClick = e => {
-		// console.log("Just a click");
-		// window.open(process.env.REACT_APP_API + "/progress/" + this.state.this_monday + "/", "_blank");
-		// console.log('0',this.maxPoints(0));
-		// console.log('5',this.maxPoints(5));
-		// console.log('7',this.maxPoints(7));
-	};
-	// value={this.state.results[q.code]}
+	onHandleChange = e => {
+		// console.log("onHandleChange", e.target.name, e.target.value);
+		this.setState({ [e.target.name]:e.target.value });
+	}
 
 	render() {
-		// console.log('render results', this);
+		// console.log('state', this.state);
 
 		const wi = 100;
 
@@ -283,7 +263,7 @@ class Questions extends Component {
 						disabled={this.state.disable}
 						style={{ width: "30px" }}
 						onChange={e => this.onQchange(e, q.code)}
-						onBlur={e => this.onQblur(e, q.code)}
+						onBlur={e => this.updateServerScore(e, q.code)}
 						id="{i.toString()}"
 						value={this.state.results[q.code]}
 					/>
@@ -399,14 +379,73 @@ class Questions extends Component {
 					</div>
 				</div>
 				<div id="Competency">
-					What Competency # are you on? &nbsp; &nbsp; &nbsp;
-					<input
-						disabled={this.state.disable}
-						value={this.state.exercise}
-						onChange={this.onExercise}
-						onBlur={e => this.onTextChange(e, "exercise")}
-						style={{width: "30px"}}
-					/>
+					<table>
+					<tbody>
+						<tr>
+							<td>
+								What Competency # are you on?
+							</td>
+							<td>
+								<select value={this.state.exercise} 
+										disabled={this.state.disable} 
+										name="exercise" 
+										onChange={this.updateServerText} >
+									<option value="100">100 JavaScript Basic Logic and Data Structures</option>
+									<option value="110">110 JavaScript Events / DOM</option>
+									<option value="910">910 git</option>
+									<option value="120">120 ReactJS</option>
+									<option value="130">130 JavaScript TDD</option>
+									<option value="140A">140A JavaScript OO - Account</option>
+									<option value="140B">140B JavaScript OO - Account User Interface</option>
+									<option value="140C">140C JavaScript OO - Account Controller & UI</option>
+									<option value="140D">140D JavaScript OO - Community and City</option>
+									<option value="140E">140E JavaScript OO - Object Reference</option>
+									<option value="150">150 JavaScript Algorithms</option>
+									<option value="160">160 Javascript Open API JSON (Optional)</option>
+									<option value="170">170 JavaScript React Redux (Optional)</option>
+									<option value="180">180 D3 (Optional)</option>
+									<option value="198">198 Front End Checklist</option>
+									<option value="200">200 Python - Getting Started - Logic</option>
+									<option value="210">210 Python - Environment Conda</option>
+									<option value="220">220 Python - File IO</option>
+									<option value="230">230 Python - Excel</option>
+									<option value="240">240 Python - Flask</option>
+									<option value="930">930 PostgresQL</option>
+									<option value="250">250 Python - Full Stack</option>
+									<option value="940">940 Heroku (Optional)</option>
+									<option value="950">950 Docker (Optional)</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								Predicted Program Completion Date
+							</td>
+							<td>
+								<input value={this.state.predcompdate} 
+										disabled={this.state.disable} 
+										type='date' 
+										name="predcompdate" 
+										onChange={this.onHandleChange} 
+										onBlur={this.updateServerText}/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								Industry Project Requested
+							</td>
+							<td>
+								<select value={this.state.industryproj} 
+										disabled={this.state.disable} 
+										name="industryproj" 
+										onChange={this.updateServerText}>
+									<option value="true">Yes I would like an Industry project</option>
+									<option value="false">I will continue learning or start working</option>
+								</select>
+							</td>
+						</tr>
+					</tbody>
+					</table>
 				</div>
 				<table className="centerTab">
 					<tbody>
@@ -433,8 +472,9 @@ class Questions extends Component {
 						<textarea
 							disabled={this.state.disable}
 							value={this.state.going_well}
-							onChange={this.onGoingWell}
-							onBlur={e => this.onTextChange(e, "going_well")}
+							name="going_well"
+							onChange={this.onHandleChange}
+							onBlur={this.updateServerText}
 							style={{ width: "90%", height: "80%" }}
 						/>
 					</div>
@@ -443,8 +483,9 @@ class Questions extends Component {
 						<textarea
 							disabled={this.state.disable}
 							value={this.state.issues}
-							onChange={this.onIssues}
-							onBlur={e => this.onTextChange(e, "issues")}
+							name="issues"
+							onChange={this.onHandleChange}
+							onBlur={this.updateServerText}
 							style={{ width: "90%", height: "80%" }}
 						/>
 					</div>
@@ -453,18 +494,13 @@ class Questions extends Component {
 						<textarea
 							disabled={this.state.disable}
 							value={this.state.what_to_try}
-							onChange={this.onWhatToTry}
-							onBlur={e => this.onTextChange(e, "what_to_try")}
+							name="what_to_try"
+							onChange={this.onHandleChange}
+							onBlur={this.updateServerText}
 							style={{ width: "90%", height: "80%" }}
 						/>
 					</div>
 				</div>
-{/*
-				<button onClick={this.onClick}> Check </button>
-				<button onClick={this.onClick} />
-				<br/>
-				<a href="http://localhost:8000/progress/2019-02-04/">Progress Report</a>
-*/}								
 			</div>
 		);
 	}
