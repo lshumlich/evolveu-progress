@@ -34,7 +34,7 @@ class AdminComp extends Component {
 			.then(data => {
 				// const r = data[0]
 				// console.log('-Just the first-', r)
-				// console.log(data)
+				console.log(data)
 				data.forEach((r, i, x) => {
 					if (!(r.student_id in this.students)) {
 						this.students[r.student_id] = {};

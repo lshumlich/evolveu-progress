@@ -38,7 +38,7 @@ class Questions extends Component {
 
 	componentDidMount = () => {
 		// console.log('Questions.componentDidMount');
-		fetch(process.env.REACT_APP_API + "/questions", {credentials: 'include'})
+		fetch(process.env.REACT_APP_API + "/questions", { credentials: 'include' })
 			.then(response => response.json())
 			.then(data => {
 				const isValid = {};
@@ -72,48 +72,48 @@ class Questions extends Component {
 				user_token: this.props.user_token,
 			})
 		})
-		.then(response => response.json())
-		.then(data => {
-			// console.log('----data:', data);
-			// const results = this.state.results;
-			// const isValid = this.state.isValid;
-			const results = {};
-			const isValid = {};
+			.then(response => response.json())
+			.then(data => {
+				// console.log('----data:', data);
+				// const results = this.state.results;
+				// const isValid = this.state.isValid;
+				const results = {};
+				const isValid = {};
 
-			this.state.questions.forEach(value => {
-				results[value.code] = 0;
-				isValid[value.code] = true;
-			});
-
-			if (data.results) {
-				Object.keys(data.results).forEach(value => {
-					// console.log('--- adding a result', value, data.results[value])
-					results[value] = data.results[value];
+				this.state.questions.forEach(value => {
+					results[value.code] = 0;
+					isValid[value.code] = true;
 				});
-			}
-			// console.log(data);
-			// console.log(results);
-			// console.log(isValid);
-			// console.log(data.allow_input);
-			const totals = this.totalValues(results, isValid);
-			this.setState({
-				results,
-				isValid,
-				last_monday: data.last_monday,
-				this_monday: data.this_monday,
-				next_monday: data.next_monday,
-				going_well: data.going_well,
-				issues: data.issues,
-				what_to_try: data.what_to_try,
-				exercise: data.exercise,
-				industryproj: data.industryproj,
-				predcompdate: data.predcompdate,
-				total: totals.total,
-				stretch_total: totals.stretch_total,
-				disable: data.allow_input ? "" : "disabled"
-			});
-		})
-		.catch(err => console.log(err));
+
+				if (data.results) {
+					Object.keys(data.results).forEach(value => {
+						// console.log('--- adding a result', value, data.results[value])
+						results[value] = data.results[value];
+					});
+				}
+				// console.log(data);
+				// console.log(results);
+				// console.log(isValid);
+				// console.log(data.allow_input);
+				const totals = this.totalValues(results, isValid);
+				this.setState({
+					results,
+					isValid,
+					last_monday: data.last_monday,
+					this_monday: data.this_monday,
+					next_monday: data.next_monday,
+					going_well: data.going_well,
+					issues: data.issues,
+					what_to_try: data.what_to_try,
+					exercise: data.exercise,
+					industryproj: data.industryproj,
+					predcompdate: data.predcompdate,
+					total: totals.total,
+					stretch_total: totals.stretch_total,
+					disable: data.allow_input ? "" : "disabled"
+				});
+			})
+			.catch(err => console.log(err));
 	};
 
 	changeMonday = monday => {
@@ -247,7 +247,7 @@ class Questions extends Component {
 
 	onHandleChange = e => {
 		// console.log("onHandleChange", e.target.name, e.target.value);
-		this.setState({ [e.target.name]:e.target.value });
+		this.setState({ [e.target.name]: e.target.value });
 	}
 
 	render() {
@@ -289,8 +289,8 @@ class Questions extends Component {
 								{" "}
 							</div>
 						) : (
-							<div />
-						)}
+								<div />
+							)}
 					</div>
 				</td>
 			</tr>
@@ -380,71 +380,75 @@ class Questions extends Component {
 				</div>
 				<div id="Competency">
 					<table>
-					<tbody>
-						<tr>
-							<td>
-								What Competency # are you on?
+						<tbody>
+							<tr>
+								<td>
+									What Competency # are you on?
 							</td>
-							<td>
-								<select value={this.state.exercise} 
-										disabled={this.state.disable} 
-										name="exercise" 
+								<td>
+									<select value={this.state.exercise}
+										disabled={this.state.disable}
+										name="exercise"
 										onChange={this.updateServerText} >
-									<option value="100">100 JavaScript Basic Logic and Data Structures</option>
-									<option value="110">110 JavaScript Events / DOM</option>
-									<option value="910">910 git</option>
-									<option value="120">120 ReactJS</option>
-									<option value="130">130 JavaScript TDD</option>
-									<option value="140A">140A JavaScript OO - Account</option>
-									<option value="140B">140B JavaScript OO - Account User Interface</option>
-									<option value="140C">140C JavaScript OO - Account Controller & UI</option>
-									<option value="140D">140D JavaScript OO - Community and City</option>
-									<option value="140E">140E JavaScript OO - Object Reference</option>
-									<option value="150">150 JavaScript Algorithms</option>
-									<option value="160">160 Javascript Open API JSON (Optional)</option>
-									<option value="170">170 JavaScript React Redux (Optional)</option>
-									<option value="180">180 D3 (Optional)</option>
-									<option value="198">198 Front End Checklist</option>
-									<option value="200">200 Python - Getting Started - Logic</option>
-									<option value="210">210 Python - Environment Conda</option>
-									<option value="220">220 Python - File IO</option>
-									<option value="230">230 Python - Excel</option>
-									<option value="240">240 Python - Flask</option>
-									<option value="930">930 PostgresQL</option>
-									<option value="250">250 Python - Full Stack</option>
-									<option value="940">940 Heroku (Optional)</option>
-									<option value="950">950 Docker (Optional)</option>
-								</select>
+
+										<option value="100">100 Comp 100 - JavaScript Basic Logic, Data Structures, and Best Practices</option>
+										<option value="910">910 git</option>
+										<option value="110">110 JavaScript TDD</option>
+										<option value="120">120 JavaScript Events / DOM</option>
+										<option value="130A">130A JavaScript OO - Account</option>
+										<option value="130B">130B JavaScript OO - Account User Interface</option>
+										<option value="130C">130C JavaScript OO - Account Controller & UI</option>
+										<option value="920">920 Fetch API</option>
+										<option value="130D">130D JavaScript OO - Community and City</option>
+										<option value="130E">130E JavaScript OO - Object Reference</option>
+										<option value="140">140 JavaScript Algorithms</option>
+										<option value="150">150 ReactJS</option>
+										<option value="160">160 Javascript Open API JSON (Optional)</option>
+										<option value="170">170 JavaScript React Redux (Optional)</option>
+										<option value="180">180 D3 (Optional)</option>
+										<option value="198">198 Frontend Checklist</option>
+										<option value="930">930 PostgresQL</option>
+										<option value="200">200 Python - Getting Started - Logic</option>
+										<option value="210">210 Python - Environment Conda</option>
+										<option value="220">220 Python - File IO</option>
+										<option value="230">230 Python - Excel</option>
+										<option value="240">240 Python - Flask</option>
+										<option value="250">250 Python - Full Stack</option>
+										<option value="300">300 Java and OO Concepts</option>
+										<option value="940">940 Heroku (Optional)</option>
+										<option value="950">950 Docker (Optional)</option>
+										<option value="298">298 Backend Checklist</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Predicted Program Completion Date
 							</td>
-						</tr>
-						<tr>
-							<td>
-								Predicted Program Completion Date
+								<td>
+									<input value={this.state.predcompdate}
+										disabled={this.state.disable}
+										type='date'
+										name="predcompdate"
+										onChange={this.onHandleChange}
+										onBlur={this.updateServerText} />
+								</td>
+							</tr>
+							{/* <tr>
+								<td>
+									Industry Project Requested
 							</td>
-							<td>
-								<input value={this.state.predcompdate} 
-										disabled={this.state.disable} 
-										type='date' 
-										name="predcompdate" 
-										onChange={this.onHandleChange} 
-										onBlur={this.updateServerText}/>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								Industry Project Requested
-							</td>
-							<td>
-								<select value={this.state.industryproj} 
-										disabled={this.state.disable} 
-										name="industryproj" 
+								<td>
+									<select value={this.state.industryproj}
+										disabled={this.state.disable}
+										name="industryproj"
 										onChange={this.updateServerText}>
-									<option value="true">Yes I would like an Industry project</option>
-									<option value="false">I will continue learning or start working</option>
-								</select>
-							</td>
-						</tr>
-					</tbody>
+										<option value="true">Yes I would like an Industry project</option>
+										<option value="false">I will continue learning or start working</option>
+									</select>
+								</td>
+							</tr> */}
+						</tbody>
 					</table>
 				</div>
 				<table className="centerTab">
@@ -465,7 +469,7 @@ class Questions extends Component {
 						{questions}
 					</tbody>
 				</table>
-				<br/>
+				<br />
 				<div style={{ width: "100%", display: "flex" }}>
 					<div style={{ height: "100px", width: "33%" }}>
 						What is going well / accomplishments?
