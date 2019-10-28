@@ -393,16 +393,16 @@ class Questions extends Component {
 
 										<option value="100">100 Comp 100 - JavaScript Basic Logic, Data Structures, and Best Practices</option>
 										<option value="910">910 git</option>
-										<option value="110">110 JavaScript TDD</option>
-										<option value="120">120 JavaScript Events / DOM</option>
+										<option value="110">110 JavaScript Events / DOM</option>
+										<option value="120">120 JavaScript TDD</option>
 										<option value="130A">130A JavaScript OO - Account</option>
 										<option value="130B">130B JavaScript OO - Account User Interface</option>
 										<option value="130C">130C JavaScript OO - Account Controller & UI</option>
 										<option value="920">920 Fetch API</option>
 										<option value="130D">130D JavaScript OO - Community and City</option>
 										<option value="130E">130E JavaScript OO - Object Reference</option>
-										<option value="140">140 JavaScript Algorithms</option>
-										<option value="150">150 ReactJS</option>
+										<option value="140">140 ReactJS</option>
+										<option value="150">150 JavaScript Algorithms</option>
 										<option value="160">160 Javascript Open API JSON (Optional)</option>
 										<option value="170">170 JavaScript React Redux (Optional)</option>
 										<option value="180">180 D3 (Optional)</option>
@@ -418,6 +418,7 @@ class Questions extends Component {
 										<option value="940">940 Heroku (Optional)</option>
 										<option value="950">950 Docker (Optional)</option>
 										<option value="298">298 Backend Checklist</option>
+
 									</select>
 								</td>
 							</tr>
