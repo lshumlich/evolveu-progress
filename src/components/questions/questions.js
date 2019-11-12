@@ -401,7 +401,10 @@ class Questions extends Component {
 										<option value="920">920 Fetch API</option>
 										<option value="130D">130D JavaScript OO - Community and City</option>
 										<option value="130E">130E JavaScript OO - Object Reference</option>
-										<option value="140">140 ReactJS</option>
+										<option value="140A">140A ReactJS - Intro</option>
+										<option value="140B">140B ReactJS - 12 Main Concepts</option>
+										<option value="140C">140C ReactJS - Migrating</option>
+										<option value="140D">140D ReactJS - Context and Hooks</option>
 										<option value="150">150 JavaScript Algorithms</option>
 										<option value="160">160 Javascript Open API JSON (Optional)</option>
 										<option value="170">170 JavaScript React Redux (Optional)</option>
@@ -409,7 +412,7 @@ class Questions extends Component {
 										<option value="198">198 Frontend Checklist</option>
 										<option value="930">930 PostgresQL</option>
 										<option value="200">200 Python - Getting Started - Logic</option>
-										<option value="210">210 Python - Environment Conda</option>
+										<option value="210">210 Python - Environment pipenv</option>
 										<option value="220">220 Python - File IO</option>
 										<option value="230">230 Python - Excel</option>
 										<option value="240">240 Python - Flask</option>
@@ -418,7 +421,7 @@ class Questions extends Component {
 										<option value="940">940 Heroku (Optional)</option>
 										<option value="950">950 Docker (Optional)</option>
 										<option value="298">298 Backend Checklist</option>
-
+										
 									</select>
 								</td>
 							</tr>
