@@ -14,6 +14,7 @@ class Questions extends Component {
 			stretch_total: 0,
 			results: [],
 			questions: [],
+			comps: [],
 			last_monday: "",
 			this_monday: "",
 			next_monday: "",
@@ -29,21 +30,25 @@ class Questions extends Component {
 			compNo: '',
 			predcompdate: '',
 			industryproj: '',
+			compdates: {},
 
 		};
 
 		this.onQchange = this.onQchange.bind(this);
 		// this.updateServerScore = this.updateServerScore.bind(this);
+
 	}
 
 	componentDidMount = () => {
 		// console.log('Questions.componentDidMount');
-		fetch(process.env.REACT_APP_API + "/questions", { credentials: 'include' })
+		// fetch(process.env.REACT_APP_API + "/questions", { credentials: 'include' })
+		fetch(process.env.REACT_APP_API + "/questionsandcomps", { credentials: 'include' })
 			.then(response => response.json())
 			.then(data => {
 				const isValid = {};
 				const results = this.state.results;
-				data.map((q, i, x) => {
+
+				data.questions.map((q, i, x) => {
 					isValid[q.code] = true;
 					results[q.code] = "0";
 					return 0;
@@ -51,7 +56,8 @@ class Questions extends Component {
 				this.setState({
 					results,
 					isValid,
-					questions: data
+					questions: data.questions,
+					comps: data.comps,
 				});
 			})
 			.catch(err => console.log(err));
@@ -99,6 +105,7 @@ class Questions extends Component {
 				this.setState({
 					results,
 					isValid,
+					compdates: data.compdates,
 					last_monday: data.last_monday,
 					this_monday: data.this_monday,
 					next_monday: data.next_monday,
@@ -196,7 +203,6 @@ class Questions extends Component {
 		this.styleInput(event.target, isValid[code]);
 	};
 
-
 	styleInput = (target, isValid) => {
 		if (isValid) {
 			target.style.background = "White";
@@ -245,6 +251,24 @@ class Questions extends Component {
 		this.updateServer("text", event.target.name, event.target.value);
 	};
 
+	// updateServerCompDate = (event, code) => {
+		
+		// console.log('updateServerCompDate', event.target.name, code, event.target.value);
+		// this.setState({ [this.state.compdates[code]]: event.target.value});
+		// this.onHandleChange(event)
+		// this.updateServer("compdate", code, event.target.value);
+	// };
+
+	changeCompDate = (event, code) => {
+		// console.log('changeCompDate', event.target.name, code, event.target.value);
+		const compdates = this.state.compdates;
+		compdates[[code]] =  event.target.value;
+		this.setState({ compdates });
+		this.updateServer("compdate", code, event.target.value);
+		// this.onHandleChange(event)
+		// this.updateServer("compdate", code, event.target.value);
+	};
+
 	onHandleChange = e => {
 		// console.log("onHandleChange", e.target.name, e.target.value);
 		this.setState({ [e.target.name]: e.target.value });
@@ -264,7 +288,7 @@ class Questions extends Component {
 						style={{ width: "30px" }}
 						onChange={e => this.onQchange(e, q.code)}
 						onBlur={e => this.updateServerScore(e, q.code)}
-						id="{i.toString()}"
+						id={i.toString()}
 						value={this.state.results[q.code]}
 					/>
 				</td>
@@ -294,6 +318,35 @@ class Questions extends Component {
 					</div>
 				</td>
 			</tr>
+		));
+
+		const comps = this.state.comps.map((c, i) => (
+			<tr key={i.toString()}>
+				<td className="right">{c.comp}</td>
+				<td className="right">{c.code}</td>
+				<td>
+					<input
+						type="date"
+						// style={{"width": "140px"}}
+						// onChange={e => this.onQchange(e, c.code)}
+						// onBlur={e => this.updateServerCompDate(e, c.code)}
+						// value="2020-02-02"
+						value = {this.state.compdates[c.code]}
+						// onInput={e => this.updateServerCompDate(e, c.code)}
+						onChange={e => this.changeCompDate(e, c.code)}
+						// id="{i.toString()}"
+					// value={this.state.results[c.key]}
+					/>
+				</td>
+			</tr>
+		));
+
+		const compsdd = this.state.comps.map((c, i) => (
+			<option value={c.code} key={i}>
+				{c.code}
+				&nbsp; - &nbsp;
+				{c.comp}
+			</option>
 		));
 
 		return (
@@ -390,38 +443,7 @@ class Questions extends Component {
 										disabled={this.state.disable}
 										name="exercise"
 										onChange={this.updateServerText} >
-
-										<option value="100">100 Comp 100 - JavaScript Basic Logic, Data Structures, and Best Practices</option>
-										<option value="910">910 git</option>
-										<option value="110">110 JavaScript Events / DOM</option>
-										<option value="120">120 JavaScript TDD</option>
-										<option value="130A">130A JavaScript OO - Account</option>
-										<option value="130B">130B JavaScript OO - Account User Interface</option>
-										<option value="130C">130C JavaScript OO - Account Controller & UI</option>
-										<option value="920">920 Fetch API</option>
-										<option value="130D">130D JavaScript OO - Community and City</option>
-										<option value="130E">130E JavaScript OO - Object Reference</option>
-										<option value="140A">140A ReactJS - Intro</option>
-										<option value="140B">140B ReactJS - 12 Main Concepts</option>
-										<option value="140C">140C ReactJS - Migrating</option>
-										<option value="140D">140D ReactJS - Context and Hooks</option>
-										<option value="150">150 JavaScript Algorithms</option>
-										<option value="160">160 Javascript Open API JSON (Optional)</option>
-										<option value="170">170 JavaScript React Redux (Optional)</option>
-										<option value="180">180 D3 (Optional)</option>
-										<option value="198">198 Frontend Checklist</option>
-										<option value="930">930 PostgresQL</option>
-										<option value="200">200 Python - Getting Started - Logic</option>
-										<option value="210">210 Python - Environment pipenv</option>
-										<option value="220">220 Python - File IO</option>
-										<option value="230">230 Python - Excel</option>
-										<option value="240">240 Python - Flask</option>
-										<option value="250">250 Python - Full Stack</option>
-										<option value="300">300 Java and OO Concepts</option>
-										<option value="940">940 Heroku (Optional)</option>
-										<option value="950">950 Docker (Optional)</option>
-										<option value="298">298 Backend Checklist</option>
-										
+										{compsdd}
 									</select>
 								</td>
 							</tr>
@@ -438,41 +460,48 @@ class Questions extends Component {
 										onBlur={this.updateServerText} />
 								</td>
 							</tr>
-							{/* <tr>
-								<td>
-									Industry Project Requested
-							</td>
-								<td>
-									<select value={this.state.industryproj}
-										disabled={this.state.disable}
-										name="industryproj"
-										onChange={this.updateServerText}>
-										<option value="true">Yes I would like an Industry project</option>
-										<option value="false">I will continue learning or start working</option>
-									</select>
-								</td>
-							</tr> */}
 						</tbody>
 					</table>
 				</div>
-				<table className="centerTab">
-					<tbody>
-						<tr>
-							<td className="right">
-								{" "}
-								<h3>Base Total / Stretch Total </h3>
-							</td>
-							<td>
-								{" "}
-								<h3>
-									{this.state.total} /{" "}
-									{this.state.stretch_total}{" "}
-								</h3>{" "}
-							</td>
-						</tr>
-						{questions}
-					</tbody>
-				</table>
+				<div>
+					<div style={{ float: "left", width: "54%"}}>
+						<table className="centerTab boxs">
+							<tbody>
+								<tr>
+									<td className="right">
+										<h3> Description</h3>
+									</td>
+									<td className="right">
+										<h3>Code</h3>
+									</td>
+								</tr>
+
+								{comps}
+							</tbody>
+						</table>
+
+					</div>
+					<div style={{ float: "right", width: "45%"}}>
+						<table className="centerTab boxs">
+							<tbody>
+								<tr>
+									<td className="right">
+										{" "}
+										<h3>Base Total / Stretch Total </h3>
+									</td>
+									<td>
+										{" "}
+										<h3>
+											{this.state.total} /{" "}
+											{this.state.stretch_total}{" "}
+										</h3>{" "}
+									</td>
+								</tr>
+								{questions}
+							</tbody>
+						</table>
+					</div>
+				</div>
 				<br />
 				<div style={{ width: "100%", display: "flex" }}>
 					<div style={{ height: "100px", width: "33%" }}>
