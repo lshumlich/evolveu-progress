@@ -331,7 +331,7 @@ class Questions extends Component {
 						// onChange={e => this.onQchange(e, c.code)}
 						// onBlur={e => this.updateServerCompDate(e, c.code)}
 						// value="2020-02-02"
-						value = {this.state.compdates[c.code]}
+						value = {this.state.compdates[c.code]||''}
 						// onInput={e => this.updateServerCompDate(e, c.code)}
 						onChange={e => this.changeCompDate(e, c.code)}
 						// id="{i.toString()}"
